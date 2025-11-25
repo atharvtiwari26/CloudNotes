@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CloudNotes — Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="root">
+
+  <main class="auth-page">
+    <div class="auth-card">
+      <h1 class="brand">CloudNotes</h1>
+      <p class="muted">Sign in to access your notes, analytics & export.</p>
+
+      <form id="loginForm" class="form">
+        <label>Username
+          <input id="loginUser" name="username" required />
+        </label>
+
+        <label>Password
+          <input id="loginPass" name="password" type="password" required />
+        </label>
+
+        <div class="row">
+          <button type="submit" class="btn primary">Sign in</button>
+          <a href="signup.html" class="btn link">Create account</a>
+        </div>
+      </form>
+
+      <div id="loginMsg" class="notice" style="display:none"></div>
+    </div>
+  </main>
+
+  <!-- Load app.js normally -->
+  <script src="app.js"></script>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const user = document.getElementById("loginUser").value.trim();
+      const pass = document.getElementById("loginPass").value.trim();
+      await App.login(user, pass);
+    });
+  </script>
+
+</body>
+</html>

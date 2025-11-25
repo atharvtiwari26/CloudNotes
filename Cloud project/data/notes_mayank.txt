@@ -1,0 +1,1 @@
+N1763527279be54|Dijkstra's algorithm|2025-11-19 10:11:19|Dijkstra's algorithm is a greedy algorithm used to find the shortest paths from a single source node to all other nodes in a graph. It is applicable to both directed and undirected graphs, but a crucial constraint is that all edge weights must be non-negative. 

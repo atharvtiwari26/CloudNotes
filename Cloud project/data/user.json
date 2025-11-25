@@ -1,0 +1,27 @@
+{
+    "atharv_tiwari": {
+        "interests": [],
+        "notes": [],
+        "password": "at123",
+        "role": "student"
+    },
+    "ice123": {
+        "interests": [],
+        "notes": [],
+        "password": "pass123",
+        "role": "student",
+        "searchHistory": [
+            "dijkstra",
+            "dijkstra",
+            "dijkstra"
+        ]
+    },
+    "imam": {
+        "password": "im123",
+        "searchHistory": []
+    },
+    "mayank": {
+        "password": "may123",
+        "searchHistory": []
+    }
+}

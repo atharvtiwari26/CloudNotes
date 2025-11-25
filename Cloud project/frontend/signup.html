@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CloudNotes — Signup</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="root">
+
+  <main class="auth-page">
+    <div class="auth-card">
+      <h1 class="brand">Create account</h1>
+      <p class="muted">Quick signup — we'll create a student account by default.</p>
+
+      <form id="signupForm" class="form">
+        <label>Username
+          <input id="signupUser" name="username" required />
+        </label>
+
+        <label>Password
+          <input id="signupPass" name="password" type="password" required />
+        </label>
+
+        <div class="row">
+          <button type="submit" class="btn primary">Sign up</button>
+          <a href="index.html" class="btn link">Back to login</a>
+        </div>
+      </form>
+
+      <div id="signupMsg" class="notice" style="display:none"></div>
+    </div>
+  </main>
+
+  <!-- Load app.js normally (NOT module) -->
+  <script src="app.js"></script>
+
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const user = document.getElementById("signupUser").value.trim();
+      const pass = document.getElementById("signupPass").value.trim();
+      await App.signup(user, pass);
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CloudNotes — Search</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js"></script>
+</head>
+
+<body class="app-root">
+  <nav class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand-small">CloudNotes</div>
+      <div id="userBadge" class="user-badge"></div>
+    </div>
+
+    <ul class="nav">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="notes.html">Notes</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+      <li><a href="search.html" class="active">Search</a></li>
+      <li><a href="#" id="exportPdfBtn">Export PDF</a></li>
+      <li><a href="#" id="signoutBtn">Sign out</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <header class="topbar">
+      <h2>Search</h2>
+    </header>
+
+    <section class="content">
+
+      <div class="card wide">
+        <h3>Search notes across all users</h3>
+        <div style="display:flex; gap:8px;">
+          <input id="globalSearchInput"
+                 placeholder="Search notes (title or body)..."
+                 style="flex:1; padding:10px; border-radius:8px;">
+          <button id="globalSearchBtn" class="btn primary">Search</button>
+        </div>
+      </div>
+
+      <div class="card wide">
+        <h3>Results</h3>
+        <div id="searchResults" style="min-height:120px">No results yet</div>
+      </div>
+
+    </section>
+  </main>
+
+<script>
+(async () => {
+  if (!await App.ensureAuth()) return;
+
+  const input = document.getElementById("globalSearchInput");
+  const btn = document.getElementById("globalSearchBtn");
+  const out = document.getElementById("searchResults");
+
+  async function doSearch() {
+    const q = input.value.trim();
+    if (!q) return alert("Enter search term");
+
+    out.innerHTML = "Searching…";
+
+    const results = await App.searchAll(q);
+    if (!results || results.length === 0) {
+      out.innerHTML = '<div class="muted">No results</div>';
+      return;
+    }
+
+    out.innerHTML = "";
+
+    results.forEach(r => {
+      const div = document.createElement("div");
+      div.className = "note-row";
+
+      const preview = (r.body || "").length > 300
+        ? (r.body || "").slice(0,300) + "…"
+        : (r.body || "");
+
+      const t64 = App.encode(r.title || "");
+      const b64 = App.encode(r.body  || "");
+
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between;">
+          <div>
+            <div class="note-title">
+              ${r.title || "(no title)"} 
+              <small class="muted">· ${r.timestamp || ""}</small>
+            </div>
+            <div class="muted" style="font-size:12px">
+              by <strong>${r.user}</strong>
+            </div>
+          </div>
+
+          <div style="text-align:right">
+            ${
+              r.user === App.getUser()
+              ? `
+                <button class="btn" onclick="App.showEdit('${r.id}','${t64}','${b64}')">Edit</button>
+                <button class="btn" onclick="App.deleteNote('${r.id}')">Delete</button>
+              `
+              : ""
+            }
+          </div>
+        </div>
+
+       <div class="note-body">
+  ${preview.replace(/\n/g,'<br/>')}
+  <br>
+  <button class="btn small"
+    onclick="App.openFullNote('${r.user}','${r.id}')">
+    View Full
+  </button>
+</div>
+
+      `;
+
+      out.appendChild(div);
+    });
+  }
+
+  btn.onclick = doSearch;
+  input.addEventListener("keypress", e => {
+    if (e.key === "Enter") doSearch();
+  });
+
+  document.getElementById("exportPdfBtn").onclick = () => App.exportPdf();
+  document.getElementById("signoutBtn").onclick = () => App.signout();
+})();
+</script>
+<div id="fullNotePopup" class="popup" style="display:none;">
+  <div class="popup-content">
+    <h3 id="popupTitle"></h3>
+    <div id="popupBody" class="popup-body"></div>
+
+    <button class="btn" onclick="App.savePopupNote()">Save to My Notes</button>
+    <button class="btn cancel" onclick="App.closePopup()">Close</button>
+  </div>
+</div>
+
+</body>
+</html>

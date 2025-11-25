@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CloudNotes — Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Load app.js FIRST -->
+  <script src="app.js"></script>
+</head>
+
+<body class="app-root">
+
+  <nav class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand-small">CloudNotes</div>
+      <div id="userBadge" class="user-badge"></div>
+    </div>
+
+    <ul class="nav">
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="notes.html">Notes</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+      <li><a href="search.html">Search</a></li>
+
+      <li><a href="#" id="exportPdfBtn">Export PDF</a></li>
+      <li><a href="#" id="signoutBtn">Sign out</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <header class="topbar">
+      <h2>Dashboard</h2>
+    </header>
+
+    <section class="content">
+      <div class="grid-3">
+
+        <div class="card">
+          <h3>Total notes</h3>
+          <div id="totalNotes" class="big">—</div>
+        </div>
+
+        <div class="card">
+          <h3>Recent note</h3>
+          <div id="recentNote" class="muted">—</div>
+        </div>
+
+        <div class="card">
+          <h3>Quick add</h3>
+          <textarea id="quickText" placeholder="Write a quick note..."></textarea>
+          <button id="quickAddBtn" class="btn primary">Add</button>
+        </div>
+
+      </div>
+      <div class="card">
+  <h3>Recommended for you</h3>
+  <div id="recommendBox" class="muted">Loading...</div>
+</div>
+
+
+      <div class="card wide">
+        <h3>Latest notes</h3>
+        <div id="notesList"></div>
+      </div>
+
+    </section>
+  </main>
+
+
+  <script>
+    window.onload = async () => {
+
+      // Ensure logged in
+      if (!await App.ensureAuth()) return;
+
+      // Load dashboard stats + recent notes
+      await App.loadDashboard();
+
+      // Quick add button
+      document.getElementById("quickAddBtn").onclick = async () => {
+        const txt = document.getElementById("quickText").value.trim();
+        if (!txt) return alert("Write something!");
+
+        await App.addNote(txt);
+        document.getElementById("quickText").value = "";
+        await App.loadDashboard();
+      };
+
+      // Export + signout
+      document.getElementById("exportPdfBtn").onclick = () => App.exportPdf();
+      document.getElementById("signoutBtn").onclick = () => App.signout();
+    };
+  </script>
+
+</body>
+</html>

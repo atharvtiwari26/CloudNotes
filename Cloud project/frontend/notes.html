@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CloudNotes — Notes</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Load app.js FIRST -->
+  <script src="app.js"></script>
+</head>
+
+<body class="app-root">
+
+  <nav class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand-small">CloudNotes</div>
+      <div id="userBadge" class="user-badge"></div>
+    </div>
+
+    <ul class="nav">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="notes.html" class="active">Notes</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+      <li><a href="search.html">Search</a></li>
+
+      <li><a href="#" id="exportPdfBtn">Export PDF</a></li>
+      <li><a href="#" id="signoutBtn">Sign out</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <header class="topbar">
+      <h2>Notes</h2>
+    </header>
+
+    <section class="content">
+
+      <div class="card wide">
+        <h3>Create note</h3>
+
+        <label>Title
+          <input id="noteTitle" />
+        </label>
+
+        <label>Body
+          <textarea id="noteBody" rows="6"></textarea>
+        </label>
+
+        <div class="row">
+          <button id="saveNoteBtn" class="btn primary">Save Note</button>
+          <button id="clearBtn" class="btn">Clear</button>
+        </div>
+      </div>
+
+      <div class="card wide">
+        <h3>Your notes</h3>
+        <input id="searchBox" class="search-input" placeholder="Search notes..." />
+
+        <div id="notesList"></div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ✅ FIXED: Popup must be OUTSIDE script -->
+  <div id="editPopup" style="
+    display:none; position:fixed; left:0; top:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.5); padding-top:80px;
+  ">
+    <div style="
+      background:#0b1220; padding:20px; width:400px; margin:0 auto;
+      border-radius:10px; box-shadow:0 0 10px #000;
+    ">
+      <h3>Edit Note</h3>
+
+      <input id="editTitle" placeholder="Title" style="margin-bottom:10px; width:100%;">
+      <textarea id="editBody" style="width:100%; height:150px;"></textarea>
+
+      <br><br>
+      <button class="btn primary" onclick="App.saveEdit()">Save</button>
+      <button class="btn" onclick="App.showEdit(
+  '${n.id}',
+  ${JSON.stringify(n.title)},
+  ${JSON.stringify(n.body)}
+)">Edit</button>
+<button class="btn" onclick="document.getElementById('editPopup').style.display='none'">Cancel</button>
+    </div>
+  </div>
+
+
+  <script>
+    window.onload = async () => {
+
+
+      if (!await App.ensureAuth()) return;
+      document.getElementById("searchBox").oninput = () => App.loadNotesPage();
+
+      
+
+      await App.loadNotesPage();
+
+      document.getElementById("saveNoteBtn").onclick = async () => {
+        const title = document.getElementById("noteTitle").value.trim();
+        const body  = document.getElementById("noteBody").value.trim();
+
+        if (!title && !body)
+          return alert("Enter something");
+
+        await App.addNote(body, title);
+
+        document.getElementById("noteTitle").value = "";
+        document.getElementById("noteBody").value = "";
+
+        await App.loadNotesPage();
+      };
+
+      document.getElementById("clearBtn").onclick = () => {
+        document.getElementById("noteTitle").value = "";
+        document.getElementById("noteBody").value = "";
+      };
+
+      document.getElementById("exportPdfBtn").onclick = () => App.exportPdf();
+      document.getElementById("signoutBtn").onclick = () => App.signout();
+    };
+  </script>
+
+</body>
+</html>
